@@ -64,6 +64,8 @@ Partial Class ClimaLab
     Public Shared diccOrganizaDeportes_3 As Dictionary(Of String, Integer)
 
     Public Shared idhotelCmboHotel As String
+    Public Shared idhotelCmboDepto As String
+    Public Shared idHotelSelected As String
 
     'Public Shared actualizaListaJefe As Boolean
 
@@ -104,10 +106,11 @@ Partial Class ClimaLab
             If idhotelCmboHotel <> "" Then
                 cboHotel.SelectedValue = idhotelCmboHotel
 
+                Dim iddeptocmbo As Integer
                 Dim dtHotel As DataTable
                 Dim dataHotel As New DataConn
                 dataHotel.SeccionConnStr = "CadenaConexion"
-                dtHotel = dataHotel.fncSelJefes(idhotelCmboHotel)
+                dtHotel = dataHotel.fncSelJefes(idhotelCmboHotel, iddeptocmbo)
 
                 If dtHotel.Rows.Count Then
                     cboSexo.DataSource = dtHotel
@@ -167,7 +170,13 @@ Partial Class ClimaLab
         Else 'SI LA PAGINA HACE POST BACK
 
             Dim shotel, str, valor As String
+            Dim sdepto As Integer
 
+            If cboDepto.SelectedValue <> "" And idHotelSelected = cboHotel.SelectedValue.ToString Then
+                sdepto = cboDepto.SelectedValue
+            End If
+
+            idHotelSelected = cboHotel.SelectedValue
             shotel = cboHotel.SelectedValue
 
             'If idhotelCmboHotel <> shotel Then
@@ -177,10 +186,27 @@ Partial Class ClimaLab
                 'str = "Select Idhotel_Dataware from Hoteles where Idhotel = '" + shotel + "'"
                 Dim selectedValue As String = Me.cboSexo.SelectedValue
 
+
+                Dim dtDeptos As DataTable
+                Dim dataDepto As New DataConn
+                dataDepto.SeccionConnStr = "CadenaConexion"
+                dtDeptos = dataDepto.fncSelDepartamento(shotel)
+
+                If dtDeptos.Rows.Count Then
+                    cboDepto.DataSource = dtDeptos
+                    cboDepto.DataTextField = "depto"
+                    cboDepto.DataValueField = "iddepto"
+                    cboDepto.DataBind()
+                End If
+
+                If sdepto <> 0 Then
+                    cboDepto.SelectedValue = sdepto
+                End If
+
                 Dim dtHotel As DataTable
                 Dim dataHotel As New DataConn
                 dataHotel.SeccionConnStr = "CadenaConexion"
-                dtHotel = dataHotel.fncSelJefes(shotel)
+                dtHotel = dataHotel.fncSelJefes(shotel, cboDepto.SelectedValue)
 
                 If dtHotel.Rows.Count Then
                     cboSexo.DataSource = dtHotel
@@ -263,7 +289,7 @@ Partial Class ClimaLab
             sTitulo = dtEncabezado.Rows(0).Item("Titulo")
             sIntruccion = dtEncabezado.Rows(0).Item("Instruccion")
             plcTitulo.Controls.Add(New LiteralControl("<p class=title>"))
-            plcTitulo.Controls.Add(New LiteralControl(sTitulo))
+            plcTitulo.Controls.Add(New LiteralControl(sTitulo & " - " & cboHotel.SelectedItem.ToString & " - " & cboSexo.SelectedItem.ToString))
             plcTitulo.Controls.Add(New LiteralControl("</p>"))
 
             plcInstruccion.Controls.Add(New LiteralControl("<p class=phonetitle>"))
@@ -580,374 +606,377 @@ Partial Class ClimaLab
         '---ClientScript.RegisterClientScriptBlock(Me.GetType, "Javascript", "Javascript:alert('Esta captura ya existe')", True)
         '---ClientScript.RegisterClientScriptBlock(Me.GetType, "Script", "deletePost()", True)
 
-        ClientScript.RegisterStartupScript(Me.GetType(), "alert", "Redirect();", True)
+        'ClientScript.RegisterStartupScript(Me.GetType(), "alert", "Redirect();", True)
 
         'If (Not ClientScript.IsStartupScriptRegistered("alert")) Then
         '    Page.ClientScript.RegisterStartupScript _
         '    (Me.GetType(), "alert", "Redirect();", True)
         'End If
 
-        'Dim dato As String = Me.plcCuerpo.Controls.Count
-        'Dim dato2 As String = Me.plcTitulo.Controls.Count()
-        'Dim dato3 As String = Me.plcInstruccion.Controls.Count()
+        Dim dato As String = Me.plcCuerpo.Controls.Count
+        Dim dato2 As String = Me.plcTitulo.Controls.Count()
+        Dim dato3 As String = Me.plcInstruccion.Controls.Count()
 
-        'Dim sTipo, sOpcion, sRespuesta, sSexo, sUbicacion, sEstudias, sHotel
-        'Dim IdPregunta, iCuestionario, iEdad, idEval As Integer
-        'Dim iAnio, iPeriodo, iSexo As Integer
+        Dim sTipo, sOpcion, sRespuesta, sSexo, sUbicacion, sEstudias, sHotel
+        Dim IdPregunta, iCuestionario, iEdad, idEval As Integer
+        Dim iAnio, iPeriodo, iSexo As Integer
 
-        'Dim IdEmpleado As String, IdEmpleado_2 As String, IdEmpleado_3 As String
-        'Dim Empleado As String, Empleado_2 As String, Empleado_3 As String
+        Dim IdEmpleado As String, IdEmpleado_2 As String, IdEmpleado_3 As String
+        Dim Empleado As String, Empleado_2 As String, Empleado_3 As String
 
-        'Dim IdEmpleadoEjemploSeguir As String, IdEmpleadoEjemploSeguir_2 As String, IdEmpleadoEjemploSeguir_3 As String
-        'Dim EmpleadoEjemploSeguir As String, EmpleadoEjemploSeguir_2 As String, EmpleadoEjemploSeguir_3 As String
+        Dim IdEmpleadoEjemploSeguir As String, IdEmpleadoEjemploSeguir_2 As String, IdEmpleadoEjemploSeguir_3 As String
+        Dim EmpleadoEjemploSeguir As String, EmpleadoEjemploSeguir_2 As String, EmpleadoEjemploSeguir_3 As String
 
-        'Dim IdEmpleadoOrganizaDeportes As String, IdEmpleadoOrganizaDeportes_2 As String, IdEmpleadoOrganizaDeportes_3 As String
-        'Dim EmpleadoOrganizaDeportes As String, EmpleadoOrganizaDeportes_2 As String, EmpleadoOrganizaDeportes_3 As String
+        Dim IdEmpleadoOrganizaDeportes As String, IdEmpleadoOrganizaDeportes_2 As String, IdEmpleadoOrganizaDeportes_3 As String
+        Dim EmpleadoOrganizaDeportes As String, EmpleadoOrganizaDeportes_2 As String, EmpleadoOrganizaDeportes_3 As String
 
-        'System.Threading.Thread.Sleep(5000)
+        System.Threading.Thread.Sleep(5000)
 
-        'If Page.IsValid Then
+        If Page.IsValid Then
 
-        '    iCuestionario = cboCuestionario.SelectedValue
-        '    sHotel = cboHotel.SelectedValue
-        '    iAnio = cboAnio.SelectedValue
-        '    iPeriodo = cboPeriodo.SelectedValue
-        '    iSexo = cboSexo.SelectedValue
-        '    idEval = 0 'CInt(txtFolio.Text)
+            iCuestionario = cboCuestionario.SelectedValue
+            sHotel = cboHotel.SelectedValue
+            iAnio = cboAnio.SelectedValue
+            iPeriodo = cboPeriodo.SelectedValue
+            iSexo = cboSexo.SelectedValue
+            idEval = 0 'CInt(txtFolio.Text)
 
-        '    Empleado = Me.txtProspectoJefe.Text
-        '    IdEmpleado = Me.HddnIdEmpleado.Value
-        '    If Empleado <> "" Then
-        '        If IdEmpleado = "0" Then
-        '            If diccJefeProspecto.ContainsKey(Empleado) Then
-        '                Dim idJefeProspecto As Integer = diccJefeProspecto(Empleado)
-        '                Me.HddnIdEmpleado.Value = idJefeProspecto
-        '            Else
-        '                Me.HddnIdEmpleado.Value = 0
-        '            End If
-        '        End If
-        '    End If
-        '    Empleado_2 = Me.txtProspectoJefe_2.Text
-        '    IdEmpleado_2 = Me.HddnIdEmpleado_2.Value
-        '    If Empleado_2 <> "" Then
-        '        If IdEmpleado_2 = "0" Then
-        '            If diccJefeProspecto_2.ContainsKey(Empleado_2) Then
-        '                Dim idJefeProspecto As Integer = diccJefeProspecto_2(Empleado_2)
-        '                Me.HddnIdEmpleado_2.Value = idJefeProspecto
-        '            Else
-        '                Me.HddnIdEmpleado_2.Value = 0
-        '            End If
-        '        End If
-        '    End If
-        '    Empleado_3 = Me.txtProspectoJefe_3.Text
-        '    IdEmpleado_3 = Me.HddnIdEmpleado_3.Value
-        '    If Empleado_3 <> "" Then
-        '        If IdEmpleado_3 = "0" Then
-        '            If diccJefeProspecto_3.ContainsKey(Empleado_3) Then
-        '                Dim idJefeProspecto As Integer = diccJefeProspecto_3(Empleado_3)
-        '                Me.HddnIdEmpleado_3.Value = idJefeProspecto
-        '            Else
-        '                Me.HddnIdEmpleado_3.Value = 0
-        '            End If
-        '        End If
-        '    End If
+            Empleado = Me.txtProspectoJefe.Text
+            IdEmpleado = Me.HddnIdEmpleado.Value
+            If Empleado <> "" Then
+                If IdEmpleado = "0" Then
+                    If diccJefeProspecto.ContainsKey(Empleado) Then
+                        Dim idJefeProspecto As Integer = diccJefeProspecto(Empleado)
+                        Me.HddnIdEmpleado.Value = idJefeProspecto
+                    Else
+                        Me.HddnIdEmpleado.Value = 0
+                    End If
+                End If
+            End If
+            Empleado_2 = Me.txtProspectoJefe_2.Text
+            IdEmpleado_2 = Me.HddnIdEmpleado_2.Value
+            If Empleado_2 <> "" Then
+                If IdEmpleado_2 = "0" Then
+                    If diccJefeProspecto_2.ContainsKey(Empleado_2) Then
+                        Dim idJefeProspecto As Integer = diccJefeProspecto_2(Empleado_2)
+                        Me.HddnIdEmpleado_2.Value = idJefeProspecto
+                    Else
+                        Me.HddnIdEmpleado_2.Value = 0
+                    End If
+                End If
+            End If
+            Empleado_3 = Me.txtProspectoJefe_3.Text
+            IdEmpleado_3 = Me.HddnIdEmpleado_3.Value
+            If Empleado_3 <> "" Then
+                If IdEmpleado_3 = "0" Then
+                    If diccJefeProspecto_3.ContainsKey(Empleado_3) Then
+                        Dim idJefeProspecto As Integer = diccJefeProspecto_3(Empleado_3)
+                        Me.HddnIdEmpleado_3.Value = idJefeProspecto
+                    Else
+                        Me.HddnIdEmpleado_3.Value = 0
+                    End If
+                End If
+            End If
 
-        '    EmpleadoEjemploSeguir = Me.txtEjemploSeguir.Text
-        '    IdEmpleadoEjemploSeguir = Me.HddIdEmpleadoEjemploSeguirI.Value
-        '    If EmpleadoEjemploSeguir <> "" Then
-        '        If IdEmpleadoEjemploSeguir = "0" Then
-        '            If diccEjemploASeguir.ContainsKey(EmpleadoEjemploSeguir) Then
-        '                Dim idJefeProspecto As Integer = diccEjemploASeguir(EmpleadoEjemploSeguir)
-        '                Me.HddIdEmpleadoEjemploSeguirI.Value = idJefeProspecto
-        '            Else
-        '                Me.HddIdEmpleadoEjemploSeguirI.Value = 0
-        '            End If
-        '        End If
-        '    End If
-        '    EmpleadoEjemploSeguir_2 = Me.txtEjemploSeguir_2.Text
-        '    IdEmpleadoEjemploSeguir_2 = Me.HddIdEmpleadoEjemploSeguirII.Value
-        '    If EmpleadoEjemploSeguir_2 <> "" Then
-        '        If IdEmpleadoEjemploSeguir_2 = "0" Then
-        '            If diccEjemploASeguir_2.ContainsKey(EmpleadoEjemploSeguir_2) Then
-        '                Dim idJefeProspecto As Integer = diccEjemploASeguir_2(EmpleadoEjemploSeguir_2)
-        '                Me.HddIdEmpleadoEjemploSeguirII.Value = idJefeProspecto
-        '            Else
-        '                Me.HddIdEmpleadoEjemploSeguirII.Value = 0
-        '            End If
-        '        End If
-        '    End If
-        '    EmpleadoEjemploSeguir_3 = Me.txtEjemploSeguir_3.Text
-        '    IdEmpleadoEjemploSeguir_3 = Me.HddIdEmpleadoEjemploSeguirIII.Value
-        '    If EmpleadoEjemploSeguir_3 <> "" Then
-        '        If IdEmpleadoEjemploSeguir_3 = "0" Then
-        '            If diccEjemploASeguir_3.ContainsKey(EmpleadoEjemploSeguir_3) Then
-        '                Dim idJefeProspecto As Integer = diccEjemploASeguir_3(EmpleadoEjemploSeguir_3)
-        '                Me.HddIdEmpleadoEjemploSeguirIII.Value = idJefeProspecto
-        '            Else
-        '                Me.HddIdEmpleadoEjemploSeguirIII.Value = 0
-        '            End If
-        '        End If
-        '    End If
+            EmpleadoEjemploSeguir = Me.txtEjemploSeguir.Text
+            IdEmpleadoEjemploSeguir = Me.HddIdEmpleadoEjemploSeguirI.Value
+            If EmpleadoEjemploSeguir <> "" Then
+                If IdEmpleadoEjemploSeguir = "0" Then
+                    If diccEjemploASeguir.ContainsKey(EmpleadoEjemploSeguir) Then
+                        Dim idJefeProspecto As Integer = diccEjemploASeguir(EmpleadoEjemploSeguir)
+                        Me.HddIdEmpleadoEjemploSeguirI.Value = idJefeProspecto
+                    Else
+                        Me.HddIdEmpleadoEjemploSeguirI.Value = 0
+                    End If
+                End If
+            End If
+            EmpleadoEjemploSeguir_2 = Me.txtEjemploSeguir_2.Text
+            IdEmpleadoEjemploSeguir_2 = Me.HddIdEmpleadoEjemploSeguirII.Value
+            If EmpleadoEjemploSeguir_2 <> "" Then
+                If IdEmpleadoEjemploSeguir_2 = "0" Then
+                    If diccEjemploASeguir_2.ContainsKey(EmpleadoEjemploSeguir_2) Then
+                        Dim idJefeProspecto As Integer = diccEjemploASeguir_2(EmpleadoEjemploSeguir_2)
+                        Me.HddIdEmpleadoEjemploSeguirII.Value = idJefeProspecto
+                    Else
+                        Me.HddIdEmpleadoEjemploSeguirII.Value = 0
+                    End If
+                End If
+            End If
+            EmpleadoEjemploSeguir_3 = Me.txtEjemploSeguir_3.Text
+            IdEmpleadoEjemploSeguir_3 = Me.HddIdEmpleadoEjemploSeguirIII.Value
+            If EmpleadoEjemploSeguir_3 <> "" Then
+                If IdEmpleadoEjemploSeguir_3 = "0" Then
+                    If diccEjemploASeguir_3.ContainsKey(EmpleadoEjemploSeguir_3) Then
+                        Dim idJefeProspecto As Integer = diccEjemploASeguir_3(EmpleadoEjemploSeguir_3)
+                        Me.HddIdEmpleadoEjemploSeguirIII.Value = idJefeProspecto
+                    Else
+                        Me.HddIdEmpleadoEjemploSeguirIII.Value = 0
+                    End If
+                End If
+            End If
 
-        '    EmpleadoOrganizaDeportes = Me.txtOrganizaDeportes.Text
-        '    IdEmpleadoOrganizaDeportes = Me.HddnEmpleadoOrganizaReportesI.Value
-        '    If EmpleadoOrganizaDeportes <> "" Then
-        '        If IdEmpleadoOrganizaDeportes = "0" Then
-        '            If diccOrganizaDeportes.ContainsKey(EmpleadoOrganizaDeportes) Then
-        '                Dim idJefeProspecto As Integer = diccOrganizaDeportes(EmpleadoOrganizaDeportes)
-        '                Me.HddnEmpleadoOrganizaReportesI.Value = idJefeProspecto
-        '            Else
-        '                Me.HddnEmpleadoOrganizaReportesI.Value = 0
-        '            End If
-        '        End If
-        '    End If
-        '    EmpleadoOrganizaDeportes_2 = Me.txtOrganizaDeportes_2.Text
-        '    IdEmpleadoOrganizaDeportes_2 = Me.HddnEmpleadoOrganizaReportesII.Value
-        '    If EmpleadoOrganizaDeportes_2 <> "" Then
-        '        If IdEmpleadoOrganizaDeportes_2 = "0" Then
-        '            If diccOrganizaDeportes_2.ContainsKey(EmpleadoOrganizaDeportes_2) Then
-        '                Dim idJefeProspecto As Integer = diccOrganizaDeportes_2(EmpleadoOrganizaDeportes_2)
-        '                Me.HddnEmpleadoOrganizaReportesII.Value = idJefeProspecto
-        '            Else
-        '                Me.HddnEmpleadoOrganizaReportesII.Value = 0
-        '            End If
-        '        End If
-        '    End If
-        '    EmpleadoOrganizaDeportes_3 = Me.txtOrganizaDeportes_3.Text
-        '    IdEmpleadoOrganizaDeportes_3 = Me.HddnEmpleadoOrganizaReportesIII.Value
-        '    If EmpleadoOrganizaDeportes_3 <> "" Then
-        '        If IdEmpleadoOrganizaDeportes_3 = "0" Then
-        '            If diccOrganizaDeportes_3.ContainsKey(EmpleadoOrganizaDeportes_3) Then
-        '                Dim idJefeProspecto As Integer = diccOrganizaDeportes_3(EmpleadoOrganizaDeportes_3)
-        '                Me.HddnEmpleadoOrganizaReportesIII.Value = idJefeProspecto
-        '            Else
-        '                Me.HddnEmpleadoOrganizaReportesIII.Value = 0
-        '            End If
-        '        End If
-        '    End If
+            EmpleadoOrganizaDeportes = Me.txtOrganizaDeportes.Text
+            IdEmpleadoOrganizaDeportes = Me.HddnEmpleadoOrganizaReportesI.Value
+            If EmpleadoOrganizaDeportes <> "" Then
+                If IdEmpleadoOrganizaDeportes = "0" Then
+                    If diccOrganizaDeportes.ContainsKey(EmpleadoOrganizaDeportes) Then
+                        Dim idJefeProspecto As Integer = diccOrganizaDeportes(EmpleadoOrganizaDeportes)
+                        Me.HddnEmpleadoOrganizaReportesI.Value = idJefeProspecto
+                    Else
+                        Me.HddnEmpleadoOrganizaReportesI.Value = 0
+                    End If
+                End If
+            End If
+            EmpleadoOrganizaDeportes_2 = Me.txtOrganizaDeportes_2.Text
+            IdEmpleadoOrganizaDeportes_2 = Me.HddnEmpleadoOrganizaReportesII.Value
+            If EmpleadoOrganizaDeportes_2 <> "" Then
+                If IdEmpleadoOrganizaDeportes_2 = "0" Then
+                    If diccOrganizaDeportes_2.ContainsKey(EmpleadoOrganizaDeportes_2) Then
+                        Dim idJefeProspecto As Integer = diccOrganizaDeportes_2(EmpleadoOrganizaDeportes_2)
+                        Me.HddnEmpleadoOrganizaReportesII.Value = idJefeProspecto
+                    Else
+                        Me.HddnEmpleadoOrganizaReportesII.Value = 0
+                    End If
+                End If
+            End If
+            EmpleadoOrganizaDeportes_3 = Me.txtOrganizaDeportes_3.Text
+            IdEmpleadoOrganizaDeportes_3 = Me.HddnEmpleadoOrganizaReportesIII.Value
+            If EmpleadoOrganizaDeportes_3 <> "" Then
+                If IdEmpleadoOrganizaDeportes_3 = "0" Then
+                    If diccOrganizaDeportes_3.ContainsKey(EmpleadoOrganizaDeportes_3) Then
+                        Dim idJefeProspecto As Integer = diccOrganizaDeportes_3(EmpleadoOrganizaDeportes_3)
+                        Me.HddnEmpleadoOrganizaReportesIII.Value = idJefeProspecto
+                    Else
+                        Me.HddnEmpleadoOrganizaReportesIII.Value = 0
+                    End If
+                End If
+            End If
 
-        '    Dim sUser As String = Thread.CurrentPrincipal.Identity.Name.Substring(Thread.CurrentPrincipal.Identity.Name.IndexOf("\") + 1)
+            Dim sUser As String = Thread.CurrentPrincipal.Identity.Name.Substring(Thread.CurrentPrincipal.Identity.Name.IndexOf("\") + 1)
 
-        '    'InsertaEncabezado(idEval)
+            'InsertaEncabezado(idEval)
 
-        '    'If IdEmpleado <> "0" And IdEmpleadoEjemploSeguir <> "0" And IdEmpleadoOrganizaDeportes <> "0" Then
-        '    'If Empleado <> "" And EmpleadoEjemploSeguir <> "" And IdEmpleadoOrganizaDeportes <> "" Then
-        '    Dim dataEncabezado As New DataConn
-        '    dataEncabezado.SeccionConnStr = "CadenaConexion"
-        '    Dim insert As Integer
+            'If IdEmpleado <> "0" And IdEmpleadoEjemploSeguir <> "0" And IdEmpleadoOrganizaDeportes <> "0" Then
+            'If Empleado <> "" And EmpleadoEjemploSeguir <> "" And IdEmpleadoOrganizaDeportes <> "" Then
+            Dim dataEncabezado As New DataConn
+            dataEncabezado.SeccionConnStr = "CadenaConexion"
+            Dim insert As Integer
 
-        '    insert = dataEncabezado.fncInsertaEncabezado(idEval, iCuestionario, sHotel, iAnio, iPeriodo, iSexo, sUser)
+            insert = dataEncabezado.fncInsertaEncabezado(idEval, iCuestionario, sHotel, iAnio, iPeriodo, iSexo, sUser)
 
-        '    If insert <> 0 Then '= 1 Then
-        '        '-- Nuevo ----
-        '        '--- Jefe Prospecto I ---
-        '        If Empleado <> "" Then
-        '            dataEncabezado.fncInsertaEncabezadoJefesProspecto(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleado, Empleado)
-        '        End If
-        '        '--- Jefe Prospecto II ---
-        '        If Empleado_2 <> "" Then
-        '            dataEncabezado.fncInsertaEncabezadoJefesProspecto(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleado_2, Empleado_2)
-        '        End If
-        '        '--- Jefe Prospecto III ---
-        '        If Empleado_3 <> "" Then
-        '            dataEncabezado.fncInsertaEncabezadoJefesProspecto(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleado_3, Empleado_3)
-        '        End If
+            If insert <> 0 Then '= 1 Then
+                '-- Nuevo ----
+                '--- Jefe Prospecto I ---
+                If Empleado <> "" Then
+                    dataEncabezado.fncInsertaEncabezadoJefesProspecto(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleado, Empleado)
+                End If
+                '--- Jefe Prospecto II ---
+                If Empleado_2 <> "" Then
+                    dataEncabezado.fncInsertaEncabezadoJefesProspecto(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleado_2, Empleado_2)
+                End If
+                '--- Jefe Prospecto III ---
+                If Empleado_3 <> "" Then
+                    dataEncabezado.fncInsertaEncabezadoJefesProspecto(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleado_3, Empleado_3)
+                End If
 
-        '        If EmpleadoEjemploSeguir <> "" Then
-        '            dataEncabezado.fncInsertaEncabezadoEjemplo_Seguir(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleadoEjemploSeguir, EmpleadoEjemploSeguir)
-        '        End If
-        '        If EmpleadoEjemploSeguir_2 <> "" Then
-        '            dataEncabezado.fncInsertaEncabezadoEjemplo_Seguir(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleadoEjemploSeguir_2, EmpleadoEjemploSeguir_2)
-        '        End If
-        '        If EmpleadoEjemploSeguir_3 <> "" Then
-        '            dataEncabezado.fncInsertaEncabezadoEjemplo_Seguir(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleadoEjemploSeguir_3, EmpleadoEjemploSeguir_3)
-        '        End If
+                If EmpleadoEjemploSeguir <> "" Then
+                    dataEncabezado.fncInsertaEncabezadoEjemplo_Seguir(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleadoEjemploSeguir, EmpleadoEjemploSeguir)
+                End If
+                If EmpleadoEjemploSeguir_2 <> "" Then
+                    dataEncabezado.fncInsertaEncabezadoEjemplo_Seguir(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleadoEjemploSeguir_2, EmpleadoEjemploSeguir_2)
+                End If
+                If EmpleadoEjemploSeguir_3 <> "" Then
+                    dataEncabezado.fncInsertaEncabezadoEjemplo_Seguir(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleadoEjemploSeguir_3, EmpleadoEjemploSeguir_3)
+                End If
 
-        '        If EmpleadoOrganizaDeportes <> "" Then
-        '            dataEncabezado.fncInsertaEncabezadoOrganiza_Deportes_Actividades(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleadoOrganizaDeportes, EmpleadoOrganizaDeportes)
-        '        End If
-        '        If EmpleadoOrganizaDeportes_2 <> "" Then
-        '            dataEncabezado.fncInsertaEncabezadoOrganiza_Deportes_Actividades(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleadoOrganizaDeportes_2, EmpleadoOrganizaDeportes_2)
-        '        End If
-        '        If EmpleadoOrganizaDeportes_3 <> "" Then
-        '            dataEncabezado.fncInsertaEncabezadoOrganiza_Deportes_Actividades(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleadoOrganizaDeportes_3, EmpleadoOrganizaDeportes_3)
-        '        End If
-        '        '-------------
+                If EmpleadoOrganizaDeportes <> "" Then
+                    dataEncabezado.fncInsertaEncabezadoOrganiza_Deportes_Actividades(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleadoOrganizaDeportes, EmpleadoOrganizaDeportes)
+                End If
+                If EmpleadoOrganizaDeportes_2 <> "" Then
+                    dataEncabezado.fncInsertaEncabezadoOrganiza_Deportes_Actividades(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleadoOrganizaDeportes_2, EmpleadoOrganizaDeportes_2)
+                End If
+                If EmpleadoOrganizaDeportes_3 <> "" Then
+                    dataEncabezado.fncInsertaEncabezadoOrganiza_Deportes_Actividades(insert, iCuestionario, sHotel, iAnio, iPeriodo, IdEmpleadoOrganizaDeportes_3, EmpleadoOrganizaDeportes_3)
+                End If
+                '-------------
 
-        '        idEval = insert
-        '        Dim dtEnviar As DataTable
-        '        Dim dataEnviar As New DataConn
-        '        dataEnviar.SeccionConnStr = "CadenaConexion"
-        '        'dtEnviar = dataEnviar.fncPreguntasEncuesta(iCuestionario)
-        '        dtEnviar = dataEnviar.fncPreguntasEncuestaxHotel(Me.cboHotel.SelectedValue, iCuestionario)
-        '        Dim oDr As DataTableReader = dtEnviar.CreateDataReader()
-        '        Dim tot As Integer = dtEnviar.Rows.Count
-        '        Dim i As Integer = 0
+                idEval = insert
+                Dim dtEnviar As DataTable
+                Dim dataEnviar As New DataConn
+                dataEnviar.SeccionConnStr = "CadenaConexion"
+                'dtEnviar = dataEnviar.fncPreguntasEncuesta(iCuestionario)
+                dtEnviar = dataEnviar.fncPreguntasEncuestaxHotel(Me.cboHotel.SelectedValue, iCuestionario)
+                Dim oDr As DataTableReader = dtEnviar.CreateDataReader()
+                Dim tot As Integer = dtEnviar.Rows.Count
+                Dim i As Integer = 0
 
-        '        Try
-        '            While oDr.Read
-        '                sTipo = oDr.Item("Tipo")
-        '                IdPregunta = oDr.Item("IdPregunta")
-        '                If sTipo.ToUpper.IndexOf("ABIERTA") > 0 Then
-        '                    sRespuesta = CType(Me.plcCuerpo.FindControl(CType(IdPregunta, String)), TextBox).Text.Trim
-        '                Else
-        '                    Dim valor As String = Me.plcCuerpo.Controls.Count
-
-
-        '                    Dim raBtn As RadioButton = getRadioGroupCheckedRadio(Me.plcCuerpo, CType(IdPregunta, String))
-        '                    sRespuesta = raBtn.ToolTip
-        '                End If
-        '                If sRespuesta.Length > 0 Then InsertaRespuesta(iCuestionario, IdPregunta, sRespuesta, idEval)
-
-        '                i = i + 1
-
-        '                If tot = i Then
-        '                    'ClientScript.RegisterClientScriptBlock(Me.GetType, "alert", "alert('los datos se guardaron con éxito')", True)'no jala
-        '                    'Response.Write("<script language='javascript'>alert('Los datos se guardaron con exito');</script>")' no jala
-        '                    'Response.Write("<script language='javascript'>window.alert('Database updated.');</script>")
-        '                    'esponse.Write(" <asp:Label ID='Label3' runat='server' Text='Database updated.' Font-Bold='true' Font-Size='X-Large' CssClass='StrongText'></asp:Label>")
-        '                    'Response.Write("<h1 align=""center"">Database updated.</h1>")
-        '                    'ClientScript.RegisterClientScriptBlock(Me.GetType, "alert", "alert('Database updated II.')", True)
-        '                End If
-
-        '            End While
+                Try
+                    While oDr.Read
+                        sTipo = oDr.Item("Tipo")
+                        IdPregunta = oDr.Item("IdPregunta")
+                        If sTipo.ToUpper.IndexOf("ABIERTA") > 0 Then
+                            sRespuesta = CType(Me.plcCuerpo.FindControl(CType(IdPregunta, String)), TextBox).Text.Trim
+                        Else
+                            Dim valor As String = Me.plcCuerpo.Controls.Count
 
 
+                            Dim raBtn As RadioButton = getRadioGroupCheckedRadio(Me.plcCuerpo, CType(IdPregunta, String))
+                            sRespuesta = raBtn.ToolTip
+                        End If
+                        If sRespuesta.Length > 0 Then InsertaRespuesta(iCuestionario, IdPregunta, sRespuesta, idEval)
 
-        '        Catch ex As Exception
-        '            'utilerias.creaMensaje(Me.Page, "Hubo un error al almacenar sus respuestas en la Base de Datos,\n" & _
-        '            '" por favor comuníquese al Departamento de Base de datos.\nError: " & ex.Message, "alertKey")
-        '        Finally
-        '            If Not oDr Is Nothing Then
-        '                oDr.Close()
-        '                oDr = Nothing
-        '            End If
-        '            'sqlConn.Close()
-        '            'sqlConn.Dispose()
-        '            Me.enviar = 1
-        '            Call btnLimpiar_Click(sender, e)
+                        i = i + 1
 
-        '        End Try
-        '    Else
-        '        ClientScript.RegisterClientScriptBlock(Me.GetType, "alert", "alert('Esta captura ya existe')", True)
-        '    End If
+                        If tot = i Then
+                            'ClientScript.RegisterClientScriptBlock(Me.GetType, "alert", "alert('los datos se guardaron con éxito')", True)'no jala
+                            'Response.Write("<script language='javascript'>alert('Los datos se guardaron con exito');</script>")' no jala
+                            'Response.Write("<script language='javascript'>window.alert('Database updated.');</script>")
+                            'esponse.Write(" <asp:Label ID='Label3' runat='server' Text='Database updated.' Font-Bold='true' Font-Size='X-Large' CssClass='StrongText'></asp:Label>")
+                            'Response.Write("<h1 align=""center"">Database updated.</h1>")
+                            'ClientScript.RegisterClientScriptBlock(Me.GetType, "alert", "alert('Database updated II.')", True)
+                        End If
 
-        '    'Dim dataEncabezado As New DataConn
-        '    'dataEncabezado.SeccionConnStr = "CadenaConexion"
-        '    'Dim insert As Integer
-
-        '    'insert = dataEncabezado.fncInsertaEncabezado(idEval, iCuestionario, sHotel, iAnio, iPeriodo, iSexo, sUser)
-
-        '    'If insert <> 0 Then '= 1 Then
-        '    '    idEval = insert
-        '    '    Dim dtEnviar As DataTable
-        '    '    Dim dataEnviar As New DataConn
-        '    '    dataEnviar.SeccionConnStr = "CadenaConexion"
-        '    '    'dtEnviar = dataEnviar.fncPreguntasEncuesta(iCuestionario)
-        '    '    dtEnviar = dataEnviar.fncPreguntasEncuestaxHotel(Me.cboHotel.SelectedValue, iCuestionario)
-        '    '    Dim oDr As DataTableReader = dtEnviar.CreateDataReader()
-        '    '    Dim tot As Integer = dtEnviar.Rows.Count
-        '    '    Dim i As Integer = 0
-
-        '    '    Try
-        '    '        While oDr.Read
-        '    '            sTipo = oDr.Item("Tipo")
-        '    '            IdPregunta = oDr.Item("IdPregunta")
-        '    '            If sTipo.ToUpper.IndexOf("ABIERTA") > 0 Then
-        '    '                sRespuesta = CType(Me.plcCuerpo.FindControl(CType(IdPregunta, String)), TextBox).Text.Trim
-        '    '            Else
-        '    '                Dim valor As String = Me.plcCuerpo.Controls.Count
+                    End While
 
 
-        '    '                Dim raBtn As RadioButton = getRadioGroupCheckedRadio(Me.plcCuerpo, CType(IdPregunta, String))
-        '    '                sRespuesta = raBtn.ToolTip
-        '    '            End If
-        '    '            If sRespuesta.Length > 0 Then InsertaRespuesta(iCuestionario, IdPregunta, sRespuesta, idEval)
 
-        '    '            i = i + 1
+                Catch ex As Exception
+                    'utilerias.creaMensaje(Me.Page, "Hubo un error al almacenar sus respuestas en la Base de Datos,\n" & _
+                    '" por favor comuníquese al Departamento de Base de datos.\nError: " & ex.Message, "alertKey")
+                Finally
+                    If Not oDr Is Nothing Then
+                        oDr.Close()
+                        oDr = Nothing
+                    End If
+                    'sqlConn.Close()
+                    'sqlConn.Dispose()
+                    Me.enviar = 1
+                    'Call btnLimpiar_Click(sender, e)
+                    'MODIFICACION
+                    Dim script As String = "redirect();"
+                    ScriptManager.RegisterStartupScript(Me, GetType(Page), "Datos guardados", script, True)
 
-        '    '            If tot = i Then
-        '    '                'ClientScript.RegisterClientScriptBlock(Me.GetType, "alert", "alert('los datos se guardaron con éxito')", True)'no jala
-        '    '                'Response.Write("<script language='javascript'>alert('Los datos se guardaron con exito');</script>")' no jala
-        '    '                'Response.Write("<script language='javascript'>window.alert('Database updated.');</script>")
-        '    '                'esponse.Write(" <asp:Label ID='Label3' runat='server' Text='Database updated.' Font-Bold='true' Font-Size='X-Large' CssClass='StrongText'></asp:Label>")
-        '    '                'Response.Write("<h1 align=""center"">Database updated.</h1>")
-        '    '                'ClientScript.RegisterClientScriptBlock(Me.GetType, "alert", "alert('Database updated II.')", True)
-        '    '            End If
+                End Try
+            Else
+                ClientScript.RegisterClientScriptBlock(Me.GetType, "alert", "alert('Esta captura ya existe')", True)
+            End If
 
-        '    '        End While
-        '    '    Catch ex As Exception
-        '    '        'utilerias.creaMensaje(Me.Page, "Hubo un error al almacenar sus respuestas en la Base de Datos,\n" & _
-        '    '        '" por favor comuníquese al Departamento de Base de datos.\nError: " & ex.Message, "alertKey")
-        '    '    Finally
-        '    '        If Not oDr Is Nothing Then
-        '    '            oDr.Close()
-        '    '            oDr = Nothing
-        '    '        End If
-        '    '        'sqlConn.Close()
-        '    '        'sqlConn.Dispose()
-        '    '        Me.enviar = 1
-        '    '        Call btnLimpiar_Click(sender, e)
+            'Dim dataEncabezado As New DataConn
+            'dataEncabezado.SeccionConnStr = "CadenaConexion"
+            'Dim insert As Integer
 
-        '    '    End Try
+            'insert = dataEncabezado.fncInsertaEncabezado(idEval, iCuestionario, sHotel, iAnio, iPeriodo, iSexo, sUser)
 
-        '    'Else
-        '    'Response.Write("<script language='javascript'>alert('Captura el dato faltante');</script>")
-        '    'Response.Write("<script languaje='javascript'>alert('Los datos Ingresados ya existen');</script>")
-        '    'ClientScript.RegisterClientScriptBlock(Me.GetType, "alert", "alert('Faltan algunos campos de completar')", True)
+            'If insert <> 0 Then '= 1 Then
+            '    idEval = insert
+            '    Dim dtEnviar As DataTable
+            '    Dim dataEnviar As New DataConn
+            '    dataEnviar.SeccionConnStr = "CadenaConexion"
+            '    'dtEnviar = dataEnviar.fncPreguntasEncuesta(iCuestionario)
+            '    dtEnviar = dataEnviar.fncPreguntasEncuestaxHotel(Me.cboHotel.SelectedValue, iCuestionario)
+            '    Dim oDr As DataTableReader = dtEnviar.CreateDataReader()
+            '    Dim tot As Integer = dtEnviar.Rows.Count
+            '    Dim i As Integer = 0
 
-        '    'Response.Write("<h1 align=""center"">La captura ya existe.</h1>") '""center""
+            '    Try
+            '        While oDr.Read
+            '            sTipo = oDr.Item("Tipo")
+            '            IdPregunta = oDr.Item("IdPregunta")
+            '            If sTipo.ToUpper.IndexOf("ABIERTA") > 0 Then
+            '                sRespuesta = CType(Me.plcCuerpo.FindControl(CType(IdPregunta, String)), TextBox).Text.Trim
+            '            Else
+            '                Dim valor As String = Me.plcCuerpo.Controls.Count
 
-        '    '----- PROSPECTO JEFE ------
-        '    'IdEmpleado = Me.HddnIdEmpleado.Value
-        '    'If IdEmpleado = "0" Then
-        '    '    Me.txtProspectoJefe.Text = ""
-        '    'End If
 
-        '    'IdEmpleado_2 = Me.HddnIdEmpleado_2.Value
-        '    'If IdEmpleado_2 = "0" Then
-        '    '    Me.txtProspectoJefe_2.Text = ""
-        '    'End If
+            '                Dim raBtn As RadioButton = getRadioGroupCheckedRadio(Me.plcCuerpo, CType(IdPregunta, String))
+            '                sRespuesta = raBtn.ToolTip
+            '            End If
+            '            If sRespuesta.Length > 0 Then InsertaRespuesta(iCuestionario, IdPregunta, sRespuesta, idEval)
 
-        '    'IdEmpleado_3 = Me.HddnIdEmpleado_3.Value
-        '    'If IdEmpleado_3 = "0" Then
-        '    '    Me.txtProspectoJefe_3.Text = ""
-        '    'End If
+            '            i = i + 1
 
-        '    ''------ PROSPECTO A SEGUIR ------
-        '    'IdEmpleadoEjemploSeguir = Me.HddIdEmpleadoEjemploSeguirI.Value
-        '    'If IdEmpleadoEjemploSeguir = "0" Then
-        '    '    Me.txtEjemploSeguir.Text = ""
-        '    'End If
+            '            If tot = i Then
+            '                'ClientScript.RegisterClientScriptBlock(Me.GetType, "alert", "alert('los datos se guardaron con éxito')", True)'no jala
+            '                'Response.Write("<script language='javascript'>alert('Los datos se guardaron con exito');</script>")' no jala
+            '                'Response.Write("<script language='javascript'>window.alert('Database updated.');</script>")
+            '                'esponse.Write(" <asp:Label ID='Label3' runat='server' Text='Database updated.' Font-Bold='true' Font-Size='X-Large' CssClass='StrongText'></asp:Label>")
+            '                'Response.Write("<h1 align=""center"">Database updated.</h1>")
+            '                'ClientScript.RegisterClientScriptBlock(Me.GetType, "alert", "alert('Database updated II.')", True)
+            '            End If
 
-        '    'IdEmpleadoEjemploSeguir_2 = Me.HddIdEmpleadoEjemploSeguirII.Value
-        '    'If IdEmpleadoEjemploSeguir_2 = "0" Then
-        '    '    Me.txtEjemploSeguir_2.Text = ""
-        '    'End If
+            '        End While
+            '    Catch ex As Exception
+            '        'utilerias.creaMensaje(Me.Page, "Hubo un error al almacenar sus respuestas en la Base de Datos,\n" & _
+            '        '" por favor comuníquese al Departamento de Base de datos.\nError: " & ex.Message, "alertKey")
+            '    Finally
+            '        If Not oDr Is Nothing Then
+            '            oDr.Close()
+            '            oDr = Nothing
+            '        End If
+            '        'sqlConn.Close()
+            '        'sqlConn.Dispose()
+            '        Me.enviar = 1
+            '        Call btnLimpiar_Click(sender, e)
 
-        '    'IdEmpleadoEjemploSeguir_3 = Me.HddIdEmpleadoEjemploSeguirIII.Value
-        '    'If IdEmpleadoEjemploSeguir_3 = "0" Then
-        '    '    Me.txtEjemploSeguir_3.Text = ""
-        '    'End If
+            '    End Try
 
-        '    ''----- ORGANIZA DEPORTES ------
-        '    'IdEmpleadoOrganizaDeportes = Me.HddnEmpleadoOrganizaReportesI.Value
-        '    'If IdEmpleadoOrganizaDeportes = "0" Then
-        '    '    Me.txtOrganizaDeportes.Text = ""
-        '    'End If
+            'Else
+            'Response.Write("<script language='javascript'>alert('Captura el dato faltante');</script>")
+            'Response.Write("<script languaje='javascript'>alert('Los datos Ingresados ya existen');</script>")
+            'ClientScript.RegisterClientScriptBlock(Me.GetType, "alert", "alert('Faltan algunos campos de completar')", True)
 
-        '    'IdEmpleadoOrganizaDeportes_2 = Me.HddnEmpleadoOrganizaReportesII.Value
-        '    'If IdEmpleadoOrganizaDeportes_2 = "0" Then
-        '    '    Me.txtOrganizaDeportes_2.Text = ""
-        '    'End If
+            'Response.Write("<h1 align=""center"">La captura ya existe.</h1>") '""center""
 
-        '    'IdEmpleadoOrganizaDeportes_3 = Me.HddnEmpleadoOrganizaReportesIII.Value
-        '    'If IdEmpleadoOrganizaDeportes_3 = "0" Then
-        '    '    Me.txtOrganizaDeportes_3.Text = ""
-        '    'End If
+            '----- PROSPECTO JEFE ------
+            'IdEmpleado = Me.HddnIdEmpleado.Value
+            'If IdEmpleado = "0" Then
+            '    Me.txtProspectoJefe.Text = ""
+            'End If
 
-        '    ' End If
-        'End If
+            'IdEmpleado_2 = Me.HddnIdEmpleado_2.Value
+            'If IdEmpleado_2 = "0" Then
+            '    Me.txtProspectoJefe_2.Text = ""
+            'End If
+
+            'IdEmpleado_3 = Me.HddnIdEmpleado_3.Value
+            'If IdEmpleado_3 = "0" Then
+            '    Me.txtProspectoJefe_3.Text = ""
+            'End If
+
+            ''------ PROSPECTO A SEGUIR ------
+            'IdEmpleadoEjemploSeguir = Me.HddIdEmpleadoEjemploSeguirI.Value
+            'If IdEmpleadoEjemploSeguir = "0" Then
+            '    Me.txtEjemploSeguir.Text = ""
+            'End If
+
+            'IdEmpleadoEjemploSeguir_2 = Me.HddIdEmpleadoEjemploSeguirII.Value
+            'If IdEmpleadoEjemploSeguir_2 = "0" Then
+            '    Me.txtEjemploSeguir_2.Text = ""
+            'End If
+
+            'IdEmpleadoEjemploSeguir_3 = Me.HddIdEmpleadoEjemploSeguirIII.Value
+            'If IdEmpleadoEjemploSeguir_3 = "0" Then
+            '    Me.txtEjemploSeguir_3.Text = ""
+            'End If
+
+            ''----- ORGANIZA DEPORTES ------
+            'IdEmpleadoOrganizaDeportes = Me.HddnEmpleadoOrganizaReportesI.Value
+            'If IdEmpleadoOrganizaDeportes = "0" Then
+            '    Me.txtOrganizaDeportes.Text = ""
+            'End If
+
+            'IdEmpleadoOrganizaDeportes_2 = Me.HddnEmpleadoOrganizaReportesII.Value
+            'If IdEmpleadoOrganizaDeportes_2 = "0" Then
+            '    Me.txtOrganizaDeportes_2.Text = ""
+            'End If
+
+            'IdEmpleadoOrganizaDeportes_3 = Me.HddnEmpleadoOrganizaReportesIII.Value
+            'If IdEmpleadoOrganizaDeportes_3 = "0" Then
+            '    Me.txtOrganizaDeportes_3.Text = ""
+            'End If
+
+            ' End If
+        End If
     End Sub
 
     Private Sub InsertaEncabezado(ByVal IdEval As Integer)
@@ -1499,11 +1528,16 @@ Partial Class ClimaLab
         Dim CompletionSet As New List(Of String)()
         diccJefeProspecto = New Dictionary(Of String, Integer)()
         oReader = cmd.ExecuteReader(CommandBehavior.CloseConnection)
+        'ERROR SOLUCIONADO EN EL CICLO WHILE DE DUPLICADO EN UN REGISTRO
+        diccJefeProspecto.Clear()
         While oReader.Read()
-            CompletionSet.Add(oReader("nombre_completo").ToString())
-            diccJefeProspecto.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            If Not CompletionSet.Contains(LTrim(RTrim(oReader("nombre_completo").ToString()))) Then
+                CompletionSet.Add(LTrim(RTrim(oReader("nombre_completo").ToString())))
+                diccJefeProspecto.Add(LTrim(RTrim(oReader("nombre_completo").ToString())), Convert.ToInt32(oReader("idusuario")))
+            End If
+            'CompletionSet.Add(oReader("nombre_completo").ToString())
+            'diccJefeProspecto.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
         End While
-        '    CompletionSet.Add(oReader["nombre_completo"].ToString());
 
         conn.Close()
         Return CompletionSet.ToArray()
@@ -1529,9 +1563,12 @@ Partial Class ClimaLab
         Dim CompletionSet As New List(Of String)()
         diccJefeProspecto_2 = New Dictionary(Of String, Integer)()
         oReader = cmd.ExecuteReader(CommandBehavior.CloseConnection)
+        diccJefeProspecto_2.Clear()
         While oReader.Read()
-            CompletionSet.Add(oReader("nombre_completo").ToString())
-            diccJefeProspecto_2.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            If Not CompletionSet.Contains(oReader("nombre_completo").ToString()) Then
+                CompletionSet.Add(oReader("nombre_completo").ToString())
+                diccJefeProspecto_2.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            End If
         End While
         '    CompletionSet.Add(oReader["nombre_completo"].ToString());
 
@@ -1559,9 +1596,12 @@ Partial Class ClimaLab
         Dim CompletionSet As New List(Of String)()
         diccJefeProspecto_3 = New Dictionary(Of String, Integer)()
         oReader = cmd.ExecuteReader(CommandBehavior.CloseConnection)
+        diccJefeProspecto_3.Clear()
         While oReader.Read()
-            CompletionSet.Add(oReader("nombre_completo").ToString())
-            diccJefeProspecto_3.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            If Not CompletionSet.Contains(oReader("nombre_completo").ToString()) Then
+                CompletionSet.Add(oReader("nombre_completo").ToString())
+                diccJefeProspecto_3.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            End If
         End While
         '    CompletionSet.Add(oReader["nombre_completo"].ToString());
 
@@ -1592,9 +1632,12 @@ Partial Class ClimaLab
         Dim CompletionSet As New List(Of String)()
         diccEjemploASeguir = New Dictionary(Of String, Integer)()
         oReader = cmd.ExecuteReader(CommandBehavior.CloseConnection)
+        diccEjemploASeguir.Clear()
         While oReader.Read()
-            CompletionSet.Add(oReader("nombre_completo").ToString())
-            diccEjemploASeguir.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            If Not CompletionSet.Contains(oReader("nombre_completo").ToString()) Then
+                CompletionSet.Add(oReader("nombre_completo").ToString())
+                diccEjemploASeguir.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            End If
         End While
         '    CompletionSet.Add(oReader["nombre_completo"].ToString());
 
@@ -1622,9 +1665,12 @@ Partial Class ClimaLab
         Dim CompletionSet As New List(Of String)()
         diccEjemploASeguir_2 = New Dictionary(Of String, Integer)()
         oReader = cmd.ExecuteReader(CommandBehavior.CloseConnection)
+        diccEjemploASeguir_2.Clear()
         While oReader.Read()
-            CompletionSet.Add(oReader("nombre_completo").ToString())
-            diccEjemploASeguir_2.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            If Not CompletionSet.Contains(oReader("nombre_completo").ToString()) Then
+                CompletionSet.Add(oReader("nombre_completo").ToString())
+                diccEjemploASeguir_2.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            End If
         End While
         '    CompletionSet.Add(oReader["nombre_completo"].ToString());
 
@@ -1652,11 +1698,15 @@ Partial Class ClimaLab
         Dim CompletionSet As New List(Of String)()
         diccEjemploASeguir_3 = New Dictionary(Of String, Integer)()
         oReader = cmd.ExecuteReader(CommandBehavior.CloseConnection)
+        diccEjemploASeguir_3.Clear()
         While oReader.Read()
-            CompletionSet.Add(oReader("nombre_completo").ToString())
-            diccEjemploASeguir_3.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            If Not CompletionSet.Contains(oReader("nombre_completo").ToString()) Then
+                CompletionSet.Add(oReader("nombre_completo").ToString())
+                diccEjemploASeguir_3.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            End If
         End While
         '    CompletionSet.Add(oReader["nombre_completo"].ToString());
+
 
         conn.Close()
         Return CompletionSet.ToArray()
@@ -1685,9 +1735,13 @@ Partial Class ClimaLab
         Dim CompletionSet As New List(Of String)()
         diccOrganizaDeportes = New Dictionary(Of String, Integer)()
         oReader = cmd.ExecuteReader(CommandBehavior.CloseConnection)
+        'ERROR SOLUCIONADO EN EL CICLO WHILE DE DUPLICADO EN UN REGISTRO
+        diccOrganizaDeportes.Clear()
         While oReader.Read()
-            CompletionSet.Add(oReader("nombre_completo").ToString())
-            diccOrganizaDeportes.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            If Not CompletionSet.Contains(oReader("nombre_completo").ToString()) Then
+                CompletionSet.Add(oReader("nombre_completo").ToString())
+                diccOrganizaDeportes.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            End If
         End While
         '    CompletionSet.Add(oReader["nombre_completo"].ToString());
 
@@ -1715,9 +1769,12 @@ Partial Class ClimaLab
         Dim CompletionSet As New List(Of String)()
         diccOrganizaDeportes_2 = New Dictionary(Of String, Integer)()
         oReader = cmd.ExecuteReader(CommandBehavior.CloseConnection)
+        diccOrganizaDeportes_2.Clear()
         While oReader.Read()
-            CompletionSet.Add(oReader("nombre_completo").ToString())
-            diccOrganizaDeportes_2.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            If Not CompletionSet.Contains(oReader("nombre_completo").ToString()) Then
+                CompletionSet.Add(oReader("nombre_completo").ToString())
+                diccOrganizaDeportes_2.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            End If
         End While
         '    CompletionSet.Add(oReader["nombre_completo"].ToString());
 
@@ -1745,9 +1802,12 @@ Partial Class ClimaLab
         Dim CompletionSet As New List(Of String)()
         diccOrganizaDeportes_3 = New Dictionary(Of String, Integer)()
         oReader = cmd.ExecuteReader(CommandBehavior.CloseConnection)
+        diccOrganizaDeportes_3.Clear()
         While oReader.Read()
-            CompletionSet.Add(oReader("nombre_completo").ToString())
-            diccOrganizaDeportes_3.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            If Not CompletionSet.Contains(oReader("nombre_completo").ToString()) Then
+                CompletionSet.Add(oReader("nombre_completo").ToString())
+                diccOrganizaDeportes_3.Add(oReader("nombre_completo").ToString(), Convert.ToInt32(oReader("idusuario")))
+            End If
         End While
         '    CompletionSet.Add(oReader["nombre_completo"].ToString());
 

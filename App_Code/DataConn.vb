@@ -105,7 +105,7 @@ Public Class DataConn
         Return dt
     End Function
 
-    Public Function fncSelJefes(ByVal idhotel As String) As DataTable
+    Public Function fncSelJefes(ByVal idhotel As String, ByVal iddepto As Integer) As DataTable
         Dim ds As New DataSet
         Dim dt As New DataTable
         Dim Conn As eConnect.DataBase
@@ -115,7 +115,7 @@ Public Class DataConn
         Conn.Open()
 
         Try
-            ds = Conn.GetDataSetBySP("SpSelJefe", idhotel)
+            ds = Conn.GetDataSetBySP("SpSelJefeEncuestas", idhotel, iddepto)
             dt = ds.Tables(0)
         Catch ex As Exception
 
@@ -437,6 +437,33 @@ Public Class DataConn
         End Try
 
         Return IdRegistro
+    End Function
+
+    '-- 22/Sept/2017 --
+    'Funcion departamento
+    Public Function fncSelDepartamento(ByVal idhotel As String) As DataTable
+        Dim ds As New DataSet
+        Dim dt As New DataTable
+        Dim Conn As eConnect.DataBase
+
+        Conn = New eConnect.DataBase(ConnStr)
+        Conn.TimeOut = 420
+        Conn.Open()
+
+        Try
+            ds = Conn.GetDataSetBySP("SpSelDeptosEncuestas", idhotel)
+            dt = ds.Tables(0)
+        Catch ex As Exception
+
+        Finally
+            If Conn.State = ConnectionState.Open Then
+                Conn.Close()
+            End If
+            Conn.Dispose()
+            ds.Dispose()
+        End Try
+
+        Return dt
     End Function
 
 End Class

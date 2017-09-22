@@ -41,9 +41,9 @@
     
 <script language="javascript">	
 /* 15 Septiembre del 2017 */
-function Redirect() {
+function redirect() {
     alert('Datos Guardados Con Éxito');
-    document.location.href = "climaLab.aspx";
+    document.location.href = "ClimaLab.aspx";
 }
 /**/
 
@@ -235,8 +235,14 @@ function SetContextKeyorganizaReportesIII(){
 	<TR>
 		<TD style="HEIGHT: 11px">Hotel:</TD>
 		<TD style="HEIGHT: 11px"><asp:dropdownlist id="cboHotel" runat="server" Width="186px" Height="24px" AutoPostBack="True"></asp:dropdownlist></TD>	
-		<TD>Jefe:</TD>
-		<TD><asp:dropdownlist id="cboSexo" runat="server" Width="268px" Height="24px"></asp:dropdownlist></TD>
+	</TR>
+	<TR>
+	    <TD style="HEIGHT: 11px">Departamento:</TD>
+		<TD style="HEIGHT: 11px"><asp:dropdownlist id="cboDepto" runat="server" Width="400px" Height="24px" AutoPostBack="True"></asp:dropdownlist></TD>
+	</TR>
+	<TR>
+	<TD>Jefe:</TD>
+		<TD><asp:dropdownlist id="cboSexo" runat="server" Width="268px" Height="24px" AutoPostBack="True"></asp:dropdownlist></TD>
 	</TR>
 	<TR style="display:none">
 		<TD style="HEIGHT: 11px">Cuestionario:</TD>
